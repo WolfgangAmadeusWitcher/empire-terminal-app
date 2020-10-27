@@ -1,0 +1,52 @@
+<div class="form-group">
+  <label for="terminalAlias">Pick a Terminal to Activate: </label>
+  <select name="terminalAlias" id="terminalAlias" class="form-control" (change)="onTerminalSelected($event)">
+    <option>Pick a Terminal..</option>
+    <option *ngFor="let terminal of terminals.getAll()" [value]="terminal.id"
+      [disabled]="!isOfflineTerminal(terminal.status)" [class.disabled]="!isOfflineTerminal(terminal.status)">
+      {{terminal.alias}} -
+      {{ getStatusText(terminal.status) }} </option>
+  </select>
+</div>
+
+<div *ngIf="selectedTerminal != undefined">
+  <h2>{{ selectedTerminal.alias }}</h2>
+
+  <br><br>
+
+  <div>
+    <p *ngFor="let ticketCategory of getTicketCategoriesForOnlineTerminal()">
+      {{ ticketCategory.name }} <span *ngIf="getQueueByTicketCategoryId(ticketCategory.id) != undefined">- {{ getQueueByTicketCategoryId(ticketCategory.id).activeWaitersCount }} visitor(s) waiting in the Queue</span>
+      <br>
+    </p>
+  </div>
+  <br><br>
+
+  <button class="btn btn-primary" [disabled]="!isSuitableToEndService()" (click)="finalizeService()">
+    Complete Service
+  </button>
+  <button class="btn btn-primary" (click)="getNextCustomer()">
+    Call Next
+  </button>
+
+
+  <br><br>
+  <div class="form-group">
+    <label for="break-reason-input">Please State the Reason of Your Break: </label>
+    <textarea [disabled]="!isSuitableToTakeABreak()" [(ngModel)]="breakText" name="break-reason" type="text"
+      id="break-reason-input" class="form-control"></textarea>
+  </div>
+  <br><br>
+  <div *ngIf="isBreakClosed()">
+    Latest time spent in Break: {{ getdiffBetweenBreakStartAndEnd() }}
+  </div>
+
+  <button class="btn btn-primary" [disabled]="!isSuitableToReturnFromBreak()" (click)="onReturningFromBreak()">
+    Return From Break
+  </button>
+
+  <button class="btn btn-primary" [disabled]="!isSuitableToTakeABreak()" (click)="onTakingBreak()">
+    Take a Break
+  </button>
+
+</div>
